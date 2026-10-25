@@ -29,7 +29,7 @@ export function PermissionState({ r }: { r: Recognition }) {
         {r.error ||
           (r.status === "loading"
             ? "Allow camera access, then we’ll load the hand-tracking model."
-            : "Enable your camera and let your hands do the talking.\nYour video stays on your device. Always.")}
+            : "Enable your camera and let your hands do the talking.\nVideo stays on your device. Translation shares landmarks only after a separate opt-in.")}
       </p>
       {r.status === "loading" ? (
         <button className="secondary" onClick={r.stop}>
@@ -44,7 +44,7 @@ export function PermissionState({ r }: { r: Recognition }) {
       )}
       <small>
         <ShieldCheck size={13} />
-        Private by design. Nothing recorded or uploaded.
+        No webcam video recorded or uploaded.
       </small>
     </div>
   );

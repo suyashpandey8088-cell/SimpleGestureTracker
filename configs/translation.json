@@ -1,0 +1,11 @@
+{
+  "schema_version": "isl-landmarks-v1",
+  "preprocessing": "body-anchor-velocity-v1",
+  "input": "camera-space landmarks: left hand 21, right hand 21, pose 33",
+  "sample_hz": 10,
+  "max_frames": 240,
+  "max_utterance_ms": 24000,
+  "face_features": false,
+  "rgb_enabled": false,
+  "notes": "Current adapter is landmark-only. RGB/face require a new versioned contract and trained encoder; never silently substitute incompatible features."
+}

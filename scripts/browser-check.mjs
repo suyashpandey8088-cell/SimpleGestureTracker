@@ -8,6 +8,10 @@ const browser = await playwright.launch({
 });
 const page = await browser.newPage({ viewport: { width: 1440, height: 1100 } });
 const errors = [];
+const translationRequests = [];
+page.on("request", (r) => {
+  if (r.url().includes("/api/")) translationRequests.push(r.url());
+});
 page.on("pageerror", (e) => errors.push(e.message));
 await page.goto("http://localhost:5173");
 await page
@@ -18,6 +22,37 @@ assert.equal(
   null,
   "No camera on load",
 );
+// Translation is a separate opt-in and never produces example model output.
+assert.equal(
+  await page.getByRole("button", { name: "Connect translation" }).isDisabled(),
+  true,
+);
+await page.getByText("No translation predicted.", { exact: true }).waitFor();
+const transcript = page.getByRole("textbox", { name: "EDITABLE TRANSCRIPT" });
+assert.equal(await transcript.inputValue(), "");
+await transcript.fill("Manually edited text for the UI test.");
+await page.getByRole("button", { name: "Clear text", exact: true }).click();
+assert.equal(await transcript.inputValue(), "");
+await page.getByRole("checkbox", { name: /I agree to send hand/ }).check();
+assert.equal(
+  await page.getByRole("button", { name: "Connect translation" }).isDisabled(),
+  true,
+  "Camera must also be active",
+);
+await page.getByRole("checkbox", { name: /I agree to send hand/ }).uncheck();
+assert.equal(
+  translationRequests.length,
+  0,
+  "No landmark sharing or API connection without an explicit Connect action",
+);
+if (process.env.TEST_TRANSLATION_API === "1") {
+  const info = await page.evaluate(async () => {
+    const r = await fetch("/api/model-info");
+    return r.json();
+  });
+  assert.equal(info.ready, false);
+  assert.equal(info.schema_version, "isl-landmarks-v1");
+}
 await page.getByRole("button", { name: "Details for Peace sign" }).click();
 await page
   .getByRole("dialog")
@@ -59,6 +94,6 @@ assert.equal(
 );
 assert.deepEqual(errors, []);
 console.log(
-  "PASS: camera opt-in, permission failure, library search/details, toggles, expansion, desktop/mobile layout, no browser exceptions.",
+  "PASS: camera opt-in, permission failure, library search/details, toggles, expansion, desktop/mobile layout, translation opt-in/editable transcript, no browser exceptions.",
 );
 await browser.close();

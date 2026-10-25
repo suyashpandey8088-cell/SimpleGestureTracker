@@ -1,6 +1,10 @@
 # GestureAI
 
-A private, browser-based hand gesture recognition dashboard. React 19 + TypeScript + Vite, Tailwind CSS 4, Motion, Lucide, and **real MediaPipe Tasks Vision Hand Landmarker inference**. No backend, account, API key, or camera upload endpoint.
+A private, browser-based hand gesture recognition dashboard. React 19 + TypeScript + Vite, Tailwind CSS 4, Motion, Lucide, and **real MediaPipe Tasks Vision Hand Landmarker inference**. Local gesture recognition needs no backend, account, API key, or camera upload endpoint. The optional continuous ISL translation research pipeline uses a separate Python service and explicit landmark-sharing consent; it does not include trained translation weights.
+
+## Continuous ISL translation (research infrastructure)
+
+See [docs/TRANSLATION.md](docs/TRANSLATION.md) for the FastAPI service, two-hand/body feature contract, offline Transformer training, evaluated-artifact gate and live editable transcript. See [data feasibility](docs/datasets/README.md) for verified annotation inventory and remaining access/license blockers. **No continuous ISL translation model has been trained or bundled.**
 
 ## Run locally
 
@@ -50,7 +54,7 @@ Inference is synchronous and non-overlapping, throttled to at most ~22 evaluatio
 
 ## Privacy / network behavior
 
-Camera starts **only** from an explicit user action. No webcam frames, audio, screenshots, or video are uploaded, recorded, or saved. Sound is a locally generated beep; microphone permission is never requested. LocalStorage contains only the last 10 gesture IDs, timestamps, and stability values. Session counts are memory-only.
+Camera starts **only** from an explicit user action. The following privacy guarantees describe **local gesture mode**; optional translation shares hand/body landmarks with your configured inference service only after a separate explicit opt-in (never RGB frames). No webcam frames, audio, screenshots, or video are uploaded, recorded, or saved. Sound is a locally generated beep; microphone permission is never requested. LocalStorage contains only the last 10 gesture IDs, timestamps, and stability values. Session counts are memory-only.
 
 The app assets, fonts, and WASM are served by the site. The model is fetched by the browser from:
 
@@ -60,7 +64,7 @@ This asset download exposes normal request metadata (e.g. IP address) to the ass
 
 ## Tests and verification
 
-`npm test` executes 24 deterministic tests covering all nine poses, mirrored/scaled examples, invalid/unsupported poses, duration, vote rejection, low-FPS confirmation, natural finger bends, image-space thumb orientation, brief dropouts and reset, plus camera request, error, and track-cleanup services. These are **synthetic geometry unit tests**, not physical-camera accuracy measurements.
+`npm test` executes 25 deterministic tests covering all nine poses, mirrored/scaled examples, invalid/unsupported poses, duration, vote rejection, low-FPS confirmation, natural finger bends, image-space thumb orientation, brief dropouts and reset, plus camera request, error, and track-cleanup services. These are **synthetic geometry unit tests**, not physical-camera accuracy measurements.
 
 `npm run test:browser` runs the headless UI check against the running dev server. It covers opt-in (no camera on load), no-camera/denied-camera feedback, library search/detail dialogs, toggles, expanded view, desktop/mobile overflow and browser exceptions. The included Chromium package targets Linux; on a normal development machine you can use Playwright's installed Chromium instead. This sandbox needed the package's Amazon Linux shared libraries extracted to `/tmp/al2023/lib` and `LD_LIBRARY_PATH=/tmp/al2023/lib` when launching the check.
 

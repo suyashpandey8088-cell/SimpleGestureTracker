@@ -1,5 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { HandLandmarker } from "@mediapipe/tasks-vision";
+import type {
+  HandLandmarker,
+  HandLandmarkerResult,
+  NormalizedLandmark,
+} from "@mediapipe/tasks-vision";
 import { createLandmarker, connections } from "../services/handLandmarker";
 import { openCamera, stopStream, cameraError } from "../services/cameraService";
 import { classify } from "../utils/gestureClassifier";
@@ -24,7 +28,15 @@ function readHistory(): HistoryEntry[] {
     return [];
   }
 }
-export function useGestureRecognition() {
+export function useGestureRecognition(
+  onFrame?: (
+    result: HandLandmarkerResult,
+    video: HTMLVideoElement,
+    timestamp: number,
+  ) => void | NormalizedLandmark[],
+) {
+  const frameHandler = useRef(onFrame);
+  frameHandler.current = onFrame;
   const video = useRef<HTMLVideoElement>(null),
     canvas = useRef<HTMLCanvasElement>(null),
     stream = useRef<MediaStream | null>(null),
@@ -227,6 +239,7 @@ export function useGestureRecognition() {
           lastProcess = now;
           try {
             const result = m.detectForVideo(v, now);
+            const body = frameHandler.current?.(result, v, now);
             processed++;
             const c = canvas.current!,
               ctx = c.getContext("2d")!;
@@ -235,6 +248,28 @@ export function useGestureRecognition() {
               c.height = v.videoHeight;
             }
             ctx.clearRect(0, 0, c.width, c.height);
+            if (settings.current.landmarks && body) {
+              ctx.strokeStyle = "#a99fe3";
+              ctx.lineWidth = 2;
+              for (const [a, b] of [
+                [11, 12],
+                [11, 13],
+                [13, 15],
+                [12, 14],
+                [14, 16],
+                [11, 23],
+                [12, 24],
+                [23, 24],
+              ]) {
+                if (body[a].visibility < 0.5 || body[b].visibility < 0.5)
+                  continue;
+                ctx.beginPath();
+                ctx.moveTo(body[a].x * c.width, body[a].y * c.height);
+                ctx.lineTo(body[b].x * c.width, body[b].y * c.height);
+                ctx.stroke();
+              }
+            }
+
             if (settings.current.landmarks)
               for (const hand of result.landmarks) {
                 ctx.strokeStyle = "#a3f477";
@@ -288,7 +323,7 @@ export function useGestureRecognition() {
               setPrediction(stable);
               setNotice(
                 result.landmarks.length > 1
-                  ? "One hand at a time, please"
+                  ? "Two hands visible · local gestures use one hand"
                   : !single
                     ? "Bring your hand into view"
                     : !inFrame

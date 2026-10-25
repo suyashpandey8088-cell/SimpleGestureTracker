@@ -15,7 +15,7 @@ export function GestureResult({
       <div className="panel-top">
         <h3>
           <Activity size={16} />
-          Recognition
+          Local gestures
         </h3>
         <span className="live-chip">{g ? "DETECTED" : "STANDBY"}</span>
       </div>

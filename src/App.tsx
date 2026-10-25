@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MotionConfig } from "motion/react";
 import {
   ArrowUpRight,
@@ -8,6 +8,8 @@ import {
   Waypoints,
   MousePointer2,
 } from "lucide-react";
+import { useTranslation } from "./hooks/useTranslation";
+import { TranslationPanel } from "./components/TranslationPanel";
 import { Navbar } from "./components/Navbar";
 import { HeroSection } from "./components/HeroSection";
 import { CameraPanel } from "./components/CameraPanel";
@@ -17,16 +19,18 @@ import { GestureHistory } from "./components/GestureHistory";
 import { GestureLibrary } from "./components/GestureLibrary";
 import { useGestureRecognition } from "./hooks/useGestureRecognition";
 export default function App() {
-  const r = useGestureRecognition();
+  const translation = useTranslation();
+  const r = useGestureRecognition(translation.onFrame);
+  useEffect(() => {
+    if (r.status !== "active" || r.paused) translation.disconnect();
+  }, [r.status, r.paused, translation.disconnect]);
   const [target, setTarget] = useState<string | null>(null);
   const scroll = () =>
-    document
-      .getElementById("detection")
-      ?.scrollIntoView({
-        behavior: matchMedia("(prefers-reduced-motion: reduce)").matches
-          ? "instant"
-          : "smooth",
-      });
+    document.getElementById("detection")?.scrollIntoView({
+      behavior: matchMedia("(prefers-reduced-motion: reduce)").matches
+        ? "instant"
+        : "smooth",
+    });
   return (
     <MotionConfig reducedMotion="user">
       <Navbar active={r.status === "active"} />
@@ -64,14 +68,18 @@ export default function App() {
           <div className="privacy-strip">
             <ShieldCheck size={16} />
             <span>
-              Your hands. Your data. <b>Only on your device.</b>
+              Local gesture mode: <b>camera frames stay on your device.</b>
             </span>
             <span className="privacy-detail">
-              No uploads. No recordings. No compromises.
+              Translation shares landmarks only with explicit consent.
               <ArrowUpRight size={14} />
             </span>
           </div>
         </section>
+        <TranslationPanel
+          t={translation}
+          cameraActive={r.status === "active" && !r.paused}
+        />
         <GestureLibrary
           onTry={(g) => {
             setTarget(g.id);
@@ -91,7 +99,7 @@ export default function App() {
             <p>
               Powered by MediaPipe, made for the moment.
               <br />
-              From camera to understanding, right in your browser.
+              On-device gestures. Optional server-based ISL research.
             </p>
           </div>
           <div className="steps">
@@ -104,7 +112,7 @@ export default function App() {
               {
                 icon: Waypoints,
                 title: "02 / Let your hands speak",
-                text: "21 landmarks map the shape of your hand. Nothing leaves your device.",
+                text: "21 landmarks map each hand. Local gesture recognition stays on your device.",
               },
               {
                 icon: ScanLine,

@@ -1,0 +1,7 @@
+# API and data validation; Python 3.11 recommended.
+fastapi==0.115.12
+uvicorn==0.34.2
+pydantic==2.11.4
+numpy==1.26.4
+
+websockets==15.0.1

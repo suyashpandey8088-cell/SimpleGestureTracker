@@ -1657,3 +1657,132 @@ footer .brand > svg {
     overflow: clip;
   }
 }
+
+.translation-panel {
+  margin-top: 42px;
+}
+.translation-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  padding: 25px;
+}
+.translation-layout h3 {
+  font-size: 19px;
+  font-weight: 500;
+  letter-spacing: -0.4px;
+}
+.translation-explainer {
+  font-size: 12px;
+  line-height: 1.8;
+  color: #a4afbf;
+  margin-top: 12px;
+}
+.translation-consent {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 11px;
+  line-height: 1.8;
+  color: #c2ccda;
+  margin-top: 18px;
+}
+.translation-consent input {
+  accent-color: var(--accent);
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+.translation-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+.translation-actions .secondary {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.translation-status {
+  font-size: 11px;
+  line-height: 1.8;
+  color: #bbcda8;
+  margin-top: 14px;
+}
+.translation-details,
+.translation-hint {
+  display: block;
+  font: 9px/1.8 monospace;
+  color: #929eac;
+  margin-top: 8px;
+}
+.transcript-area > label,
+.transcript-title label {
+  font: 9px monospace;
+  letter-spacing: 1px;
+  color: #b7bfd0;
+}
+.interim-text {
+  border: 1px dashed #3e4754;
+  border-radius: 6px;
+  padding: 14px;
+  min-height: 77px;
+  color: #a8b9cc;
+  font-size: 13px;
+  line-height: 1.7;
+  margin: 10px 0 20px;
+  white-space: pre-wrap;
+}
+.transcript-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+.transcript-area textarea {
+  display: block;
+  width: 100%;
+  min-height: 147px;
+  resize: vertical;
+  padding: 13px;
+  background: #0d1219;
+  border: 1px solid #3b4656;
+  border-radius: 6px;
+  font:
+    13px/1.8 "Inter Variable",
+    sans-serif;
+  color: #e0eddd;
+  margin-top: 10px;
+}
+.transcript-area textarea::placeholder {
+  color: #8996a6;
+  font-size: 11px;
+}
+.transcript-area > small {
+  display: block;
+  font-size: 10px;
+  line-height: 1.8;
+  color: #9ba8b8;
+  margin-top: 10px;
+}
+@media (max-width: 760px) {
+  .translation-layout {
+    grid-template-columns: 1fr;
+    padding: 20px;
+    gap: 25px;
+  }
+  .translation-panel .panel-label {
+    display: none;
+  }
+  .translation-panel .panel-top {
+    padding: 0 13px;
+  }
+  .translation-panel .panel-top h3 {
+    font-size: 11px;
+  }
+  .translation-panel .live-chip {
+    font-size: 6px;
+  }
+}
