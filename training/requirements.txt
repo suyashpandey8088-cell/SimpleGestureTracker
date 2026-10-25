@@ -1,0 +1,7 @@
+-r ../requirements.txt
+# Install a hardware-appropriate PyTorch wheel separately (see docs/TRANSLATION.md).
+# The baseline targets torch==2.7.0.
+mediapipe==0.10.21
+opencv-python==4.11.0.86
+sacrebleu==2.5.1
+jiwer==3.1.0

@@ -1,0 +1,18 @@
+{
+  "source": "https://github.com/Exploration-Lab/ISLTranslate",
+  "annotation_path": "data/ISLTranslate.csv",
+  "annotation_sha256": "7caedc841963c5844ab00a695aff5b5e202072e9406e5c587803eec9a6f6d835",
+  "annotation_rows": 31222,
+  "columns": [
+    "uid",
+    "text"
+  ],
+  "unique_normalized_texts": 28109,
+  "repeated_text_rows": 3113,
+  "missing_text_rows": 0,
+  "video_files_downloaded": 0,
+  "signer_metadata_present": false,
+  "source_video_metadata_present": false,
+  "license_clearance": "Not approved for deployment; upstream README states CC BY-NC 4.0 and contains a CISLR naming inconsistency. Verify with maintainers.",
+  "readiness": "BLOCKED: video access, source/signer metadata, license review, extraction and independent splits are required."
+}

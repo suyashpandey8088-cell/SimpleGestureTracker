@@ -15,7 +15,7 @@ export function GestureResult({
       <div className="panel-top">
         <h3>
           <Activity size={16} />
-          Recognition
+          Local gestures
         </h3>
         <span className="live-chip">{g ? "DETECTED" : "STANDBY"}</span>
       </div>
@@ -44,9 +44,17 @@ export function GestureResult({
                 ? g.name
                 : r.paused
                   ? "Detection paused"
-                  : "Ready when you are"}
+                  : r.status === "active"
+                    ? r.notice
+                    : "Ready when you are"}
             </h3>
-            <p>{g ? g.meaning : "Your next gesture starts here."}</p>
+            <p>
+              {g
+                ? g.meaning
+                : r.status === "active"
+                  ? "Face your palm toward the camera and hold the pose briefly."
+                  : "Your next gesture starts here."}
+            </p>
             {g && <div className="gesture-message">{g.message}</div>}
           </motion.div>
         </AnimatePresence>

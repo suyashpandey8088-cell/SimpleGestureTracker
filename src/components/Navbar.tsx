@@ -14,6 +14,7 @@ export function Navbar({ active }: { active: boolean }) {
         <a className="nav-selected" href="#detection">
           Live detection
         </a>
+        <a href="#translation">ISL translation</a>
         <a href="#library">Gesture library</a>
         <a href="#about">
           How it works <ArrowUpRight size={12} />

@@ -33,7 +33,7 @@ export function HeroSection({ start }: { start: () => void }) {
           </span>
           <span>
             <i className="dot purple" />
-            100% on-device
+            On-device gesture mode
           </span>
           <span>
             <i className="dot blue" />9 gestures, endless possibilities

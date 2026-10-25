@@ -3,3 +3,15 @@ dist/
 .env*
 .vercel/
 *.tsbuildinfo
+.venv/
+__pycache__/
+.pytest_cache/
+data/
+artifacts/*
+!artifacts/README.md
+*.pt
+*.pth
+*.npz
+*.npy
+*.mp4
+*.webm
