@@ -24,7 +24,7 @@ Click **Start detection** or **Enable camera**, allow camera access, then hold o
 - Live webcam and aligned, mirrored canvas skeleton with 21 landmarks.
 - Nine rules: open palm, thumbs up/down, fist, peace, pointing, OK, rock, three fingers (index + middle + ring).
 - Multi-joint **3D joint angles**, wrist-relative reach, palm-normalized distances, and thumb/index contact. Thumb direction uses camera gravity; other rules are reflection/scale invariant.
-- Rolling 650 ms voting window; ≥6 samples, ≥300 ms and ≥80% agreement before confirmation. Unknown/ambiguous poses are not assigned invented labels.
+- Rolling 1,000 ms voting window; ≥3 matching samples, ≥300 ms and ≥75% agreement before confirmation. Brief classification dropouts are bridged for at most 250 ms; missing/out-of-frame or multiple hands clear the result immediately. Unknown/ambiguous poses are not assigned invented labels.
 - Displayed **stability** = vote agreement × joint geometry quality, **not measured accuracy or a calibrated model confidence**.
 - Start/stop, pause/resume, camera selection (when multiple devices exist), mirror, landmark toggle, optional oscillator sound, expanded camera view.
 - Searchable gesture library, accessible native detail dialogs, target challenges, last 10 local confirmations, clear history, session statistics.
@@ -60,7 +60,7 @@ This asset download exposes normal request metadata (e.g. IP address) to the ass
 
 ## Tests and verification
 
-`npm test` executes 17 deterministic tests covering all nine poses, mirrored/scaled examples, invalid/unsupported poses, duration, vote rejection and reset, plus camera request, error, and track-cleanup services. These are **synthetic geometry unit tests**, not physical-camera accuracy measurements.
+`npm test` executes 24 deterministic tests covering all nine poses, mirrored/scaled examples, invalid/unsupported poses, duration, vote rejection, low-FPS confirmation, natural finger bends, image-space thumb orientation, brief dropouts and reset, plus camera request, error, and track-cleanup services. These are **synthetic geometry unit tests**, not physical-camera accuracy measurements.
 
 `npm run test:browser` runs the headless UI check against the running dev server. It covers opt-in (no camera on load), no-camera/denied-camera feedback, library search/detail dialogs, toggles, expanded view, desktop/mobile overflow and browser exceptions. The included Chromium package targets Linux; on a normal development machine you can use Playwright's installed Chromium instead. This sandbox needed the package's Amazon Linux shared libraries extracted to `/tmp/al2023/lib` and `LD_LIBRARY_PATH=/tmp/al2023/lib` when launching the check.
 
@@ -79,7 +79,7 @@ This asset download exposes normal request metadata (e.g. IP address) to the ass
 
 ## Deployment
 
-Vercel: import `suyashpandey8088-cell/SimpleGestureTracker`, select **Vite**, use `npm ci`, `npm run build`, output `dist`. No environment variables. `vercel.json` supplies security headers and WASM caching. Deploy the working branch `arena/14246226-simplegesturetracker` as production if publishing this session without merging. Future default production deployments use the project's configured production branch; select this branch explicitly until it is merged.
+Vercel: import `suyashpandey8088-cell/SimpleGestureTracker`, select **Vite**, use `npm ci`, `npm run build`, output `dist`. No environment variables. `vercel.json` supplies security headers and WASM caching. Deploy the working branch `arena/a2c20f90-simplegesturetracker` as production if publishing this session without merging. Future default production deployments use the project's configured production branch; select this branch explicitly until it is merged.
 
 Netlify: build `npm run build`, publish `dist`, Node 24. Serve over HTTPS and allow camera permissions. No SPA rewrites are necessary because navigation uses page anchors.
 

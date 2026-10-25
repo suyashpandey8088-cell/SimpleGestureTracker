@@ -69,12 +69,13 @@ describe("geometric gesture rules", () => {
   });
 });
 describe("temporal smoothing", () => {
-  it("requires duration and agreement, and clears unknowns immediately", () => {
+  it("requires duration and agreement, and bridges only short dropouts", () => {
     const s = new GestureSmoother(),
       p = { id: "palm" as const, score: 0.9 };
     for (let t = 0; t < 300; t += 50) expect(s.update(p, t)).toBeNull();
     expect(s.update(p, 350)?.id).toBe("palm");
-    expect(s.update(null, 400)).toBeNull();
+    expect(s.update(null, 400)?.id).toBe("palm");
+    expect(s.update(null, 650)).toBeNull();
     s.reset();
     expect(s.update(p, 500)).toBeNull();
   });
@@ -85,4 +86,61 @@ describe("temporal smoothing", () => {
         s.update({ id: t % 100 === 0 ? "palm" : "fist", score: 1 }, t),
       ).toBeNull();
   });
+});
+
+describe("recognition regressions", () => {
+  it("accepts naturally bent extended fingers rather than requiring perfect joints", () => {
+    const p = pose([1, 1, 1, 1], true);
+    for (const b of [5, 9, 13, 17]) {
+      p[b + 2].x += 0.16;
+      p[b + 3].x += 0.28;
+    }
+    expect(classify(p)?.id).toBe("palm");
+  });
+  it("does not require a tucked thumb for pointing or three fingers", () => {
+    expect(classify(pose([1, 0, 0, 0], true))?.id).toBe("point");
+    expect(classify(pose([1, 1, 1, 0], true))?.id).toBe("three");
+  });
+  it("does not reject valid world landmarks because of an absolute hand size cutoff", () => {
+    expect(
+      classify(
+        pose([1, 1, 1, 1], true).map((p) => ({
+          x: p.x * 0.005,
+          y: p.y * 0.005,
+          z: p.z * 0.005,
+        })),
+      )?.id,
+    ).toBe("palm");
+  });
+  it("uses image coordinates for thumb direction before rejecting the pose", () => {
+    const camera = pose([0, 0, 0, 0], true);
+    const rotated = camera.map((p) => ({ x: -p.y, y: p.x, z: p.z }));
+    expect(classify(rotated, camera)?.id).toBe("up");
+  });
+  it("confirms a stable gesture at 3 FPS", () => {
+    const s = new GestureSmoother();
+    expect(s.update({ id: "palm", score: 0.9 }, 0)).toBeNull();
+    expect(s.update({ id: "palm", score: 0.9 }, 333)).toBeNull();
+    expect(s.update({ id: "palm", score: 0.9 }, 666)?.id).toBe("palm");
+  });
+  it("recovers from a missing observation without permanently losing confirmation", () => {
+    const s = new GestureSmoother();
+    for (let t = 0; t <= 600; t += 100) s.update({ id: "palm", score: 0.9 }, t);
+    expect(s.update(null, 700)?.id).toBe("palm");
+    expect(s.update({ id: "palm", score: 0.9 }, 800)?.id).toBe("palm");
+    s.reset();
+    expect(s.update(null, 900)).toBeNull();
+  });
+});
+
+it("keeps half-curled and degenerate poses unknown", () => {
+  const p = pose([1, 0, 0, 0]);
+  p[7] = { x: p[5].x + 0.25, y: -1.7, z: 0 };
+  p[8] = { x: p[5].x + 0.4, y: -1.95, z: 0 };
+  expect(classify(p)).toBeNull();
+  const broken = pose([0, 0, 0, 0]);
+  broken[6] = { ...broken[5] };
+  broken[7] = { ...broken[5] };
+  broken[8] = { ...broken[5] };
+  expect(classify(broken)).toBeNull();
 });

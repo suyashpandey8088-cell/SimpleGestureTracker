@@ -261,23 +261,25 @@ export function useGestureRecognition() {
               result.landmarks[0].every(
                 (p) => p.x > 0.01 && p.x < 0.99 && p.y > 0.01 && p.y < 0.99,
               );
+            // Normalized image x/y have different units in a non-square feed.
+            // Use aspect-corrected camera coordinates for thumb direction and
+            // as a fallback when world landmarks are temporarily unavailable.
+            const aspect = v.videoWidth / v.videoHeight;
+            const cameraPoints = single
+              ? result.landmarks[0].map((p) => ({
+                  x: p.x * aspect,
+                  y: p.y,
+                  z: p.z * aspect,
+                }))
+              : [];
+            const world = result.worldLandmarks[0];
             const candidate = inFrame
-              ? classify(result.worldLandmarks[0])
+              ? classify(
+                  world?.length === 21 ? world : cameraPoints,
+                  cameraPoints,
+                )
               : null;
-            // Direction for thumbs-up/down must be measured in camera space, not world orientation.
-            if (
-              candidate &&
-              (candidate.id === "up" || candidate.id === "down")
-            ) {
-              const h = result.landmarks[0];
-              const dx = h[4].x - h[2].x,
-                dy = h[4].y - h[2].y;
-              if (Math.abs(dy) > Math.abs(dx) * 1.2)
-                candidate.id = dy < 0 ? "up" : "down";
-              else {
-                candidate.score = 0;
-              }
-            }
+            if (!inFrame) smoother.current.reset();
             const stable = smoother.current.update(
               candidate && candidate.score > 0 ? candidate : null,
               now,
