@@ -60,7 +60,7 @@ This asset download exposes normal request metadata (e.g. IP address) to the ass
 
 ## Tests and verification
 
-`npm test` executes 12 deterministic tests covering all nine poses, mirrored/scaled examples, invalid/unsupported poses, duration, vote rejection and reset. These are **synthetic geometry unit tests**, not physical-camera accuracy measurements.
+`npm test` executes 17 deterministic tests covering all nine poses, mirrored/scaled examples, invalid/unsupported poses, duration, vote rejection and reset, plus camera request, error, and track-cleanup services. These are **synthetic geometry unit tests**, not physical-camera accuracy measurements.
 
 `npm run test:browser` runs the headless UI check against the running dev server. It covers opt-in (no camera on load), no-camera/denied-camera feedback, library search/detail dialogs, toggles, expanded view, desktop/mobile overflow and browser exceptions. The included Chromium package targets Linux; on a normal development machine you can use Playwright's installed Chromium instead. This sandbox needed the package's Amazon Linux shared libraries extracted to `/tmp/al2023/lib` and `LD_LIBRARY_PATH=/tmp/al2023/lib` when launching the check.
 

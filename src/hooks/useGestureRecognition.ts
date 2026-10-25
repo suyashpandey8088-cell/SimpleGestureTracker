@@ -41,7 +41,7 @@ export function useGestureRecognition() {
     [paused, setPaused] = useState(false),
     [mirror, setMirror] = useState(true),
     [landmarks, setLandmarks] = useState(true),
-    [sound, setSound] = useState(false),
+    [sound, setSoundState] = useState(false),
     [devices, setDevices] = useState<MediaDeviceInfo[]>([]),
     [device, setDevice] = useState(""),
     [prediction, setPrediction] = useState<Prediction | null>(null),
@@ -51,6 +51,19 @@ export function useGestureRecognition() {
     [counts, setCounts] = useState<Record<string, number>>({}),
     [seconds, setSeconds] = useState(0),
     [detectedAt, setDetectedAt] = useState<number | null>(null);
+  // Unlock audio in the button click, not in the later inference callback.
+  const setSound = (enabled: boolean) => {
+    if (enabled) {
+      try {
+        audio.current ??= new AudioContext();
+        void audio.current.resume().catch(() => {});
+      } catch {
+        setSoundState(false);
+        return;
+      }
+    }
+    setSoundState(enabled);
+  };
   const settings = useRef({ paused, landmarks, sound });
   settings.current = { paused, landmarks, sound };
   useEffect(() => {
